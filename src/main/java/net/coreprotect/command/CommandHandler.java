@@ -77,6 +77,9 @@ public class CommandHandler implements CommandExecutor {
             else if (user.hasPermission("coreprotect.give") && corecommand.equals("give")) {
                 permission = true;
             }
+            else if (user.hasPermission("coreprotect.web") && (corecommand.equals("web") || corecommand.equals("webui"))) {
+                permission = true;
+            }
 
             if (corecommand.equals("rollback") || corecommand.equals("restore") || corecommand.equals("rb") || corecommand.equals("rs") || corecommand.equals("ro") || corecommand.equals("re")) {
                 RollbackRestoreCommand.runCommand(user, command, permission, argumentArray, null, 0, 0);
@@ -122,6 +125,9 @@ public class CommandHandler implements CommandExecutor {
             }
             else if (corecommand.equals("give")) {
                 GiveCommand.runCommand(user, command, permission, argumentArray);
+            }
+            else if (corecommand.equals("web") || corecommand.equals("webui")) {
+                WebCommand.runCommand(user, permission, argumentArray);
             }
             else if (corecommand.equals("migrate-db")) {
                 if (!VersionUtils.validDonationKey()) {

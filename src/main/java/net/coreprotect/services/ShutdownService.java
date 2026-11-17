@@ -56,6 +56,7 @@ public class ShutdownService {
                     VersionUtils.unloadWorldEdit();
                 }
                 Extensions.stopBackgroundService();
+                net.coreprotect.web.WebManager.shutdown();
                 PluginInitializationService.disableMetrics();
 
                 // Log disconnections of online players if server is stopping

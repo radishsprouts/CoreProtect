@@ -95,6 +95,7 @@ public class TabHandler implements TabCompleter {
         addCompletionIfPermitted(sender, "coreprotect.status", "status", completions);
         addCompletionIfPermitted(sender, "coreprotect.lookup.near", "near", completions);
         addCompletionIfPermitted(sender, "coreprotect.restore", "undo", completions);
+        addCompletionIfPermitted(sender, "coreprotect.web", "web", completions);
 
         return StringUtil.copyPartialMatches(arg, completions, new ArrayList<>(completions.size()));
     }
@@ -439,6 +440,10 @@ public class TabHandler implements TabCompleter {
         }
         else if (argument0.equals("purge") && sender.hasPermission("coreprotect.purge")) {
             List<String> completions = new ArrayList<>(Arrays.asList("t:", "r:", "i:", "e:", "a:kill"));
+            return StringUtil.copyPartialMatches(argument1, completions, new ArrayList<>(completions.size()));
+        }
+        else if ((argument0.equals("web") || argument0.equals("webui")) && sender.hasPermission("coreprotect.web")) {
+            List<String> completions = new ArrayList<>(Arrays.asList("status", "start", "stop", "restart", "register", "unregister", "admins"));
             return StringUtil.copyPartialMatches(argument1, completions, new ArrayList<>(completions.size()));
         }
         else if (hasLookupCommand(argument0, sender)) {

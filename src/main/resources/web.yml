@@ -1,0 +1,59 @@
+# CoreProtect WebUI 設定ファイル (web.yml)
+
+web:
+  # Web UI / API を起動するか
+  enabled: true
+  # 待受ポート
+  port: 8123
+  # 待受アドレス。外部に公開しない前提。絞りたい場合は 127.0.0.1 にする
+  bind-address: "0.0.0.0"
+
+lookup:
+  # 中心座標指定なしで検索した場合の既定半径
+  default-radius: 10
+  # 1ページあたりの表示件数
+  page-size: 50
+  # 1回のリクエストで取得できる最大件数（暴走防止）
+  max-rows: 1000
+
+container-net:
+  # 持ち出し集計（コンテナの出し入れ差分）で走査する最大行数
+  max-rows: 20000
+  # 持ち出し集計処理のタイムアウト秒数
+  timeout-seconds: 60
+
+operations:
+  # ロールバックを許可するか
+  rollback-enabled: true
+  # リストアを許可するか
+  restore-enabled: true
+  # パージ（古いデータ削除）を許可するか。誤操作の影響が大きいため既定は無効
+  purge-enabled: false
+
+teleport:
+  # Web UI からの管理者テレポートを許可するか
+  enabled: true
+  # true にすると指定Y座標ではなく、その地点の地表にテレポートする
+  safe-y: false
+  # テレポートされた本人にチャットで通知するか
+  notify-player: true
+
+job:
+  # ロールバック等の完了したジョブを何分間保持するか
+  retention-minutes: 10
+
+mcp:
+  # MCPサーバー（/mcp）を有効にするか。AIクライアントからの読み取り専用アクセスを許可する
+  enabled: true
+  # 接続元をプライベートIPアドレス帯（LAN内）に限定するか
+  allow-private-only: true
+  # 追加で許可するCIDR（例: ["203.0.113.0/24"]）。allow-private-only が true でも併用可能
+  allowed-cidrs: []
+  # 検索系ツールが1回に返す最大行数
+  max-rows: 200
+  # activity_summary / container_net_summary が走査する最大行数
+  summary-max-rows: 20000
+  # ツール実行のタイムアウト秒数
+  timeout-seconds: 60
+  # JSON-RPCの送受信内容をログに出す（プロトコル不整合の切り分け用）
+  log-requests: false

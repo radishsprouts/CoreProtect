@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoreProtect WebUI</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+	<h1>CoreProtect WebUI</h1>
+
+	<div class="admin-picker">
+		<label for="admin-select">テレポート対象の管理者</label>
+		<select id="admin-select">
+			<option value="">（未選択）</option>
+		</select>
+		<button id="admin-refresh" class="btn-small" title="管理者一覧を再取得">更新</button>
+		<button id="admin-goto" class="btn-small" title="選択中の管理者の現在地を検索条件に反映">現在地を中心にする</button>
+		<span id="admin-hint" class="hint"></span>
+	</div>
+</header>
+
+<nav class="tabs">
+	<button class="tab-button active" data-tab="lookup">調査</button>
+	<button class="tab-button" data-tab="operation">ロールバック・リストア</button>
+	<button class="tab-button" data-tab="netdiff">持ち出し集計</button>
+	<button class="tab-button" data-tab="maintenance">メンテナンス</button>
+	<button class="tab-button" data-tab="status">ステータス</button>
+</nav>
+
+<main>
+
+	<!-- ================= 調査タブ ================= -->
+	<section id="tab-lookup" class="tab-panel active">
+		<form id="lookup-form" class="filter-form">
+			<label class="global-toggle">
+				<input type="checkbox" name="global" class="global-checkbox">
+				グローバル検索（ワールド/座標/半径を無視して全ワールドを検索）
+			</label>
+
+			<div class="filter-grid">
+				<label class="coord-field">ワールド
+					<select name="world" class="world-select"></select>
+				</label>
+				<label class="coord-field">X <input type="number" name="x" step="any"></label>
+				<label class="coord-field">Y <input type="number" name="y" step="any"></label>
+				<label class="coord-field">Z <input type="number" name="z" step="any"></label>
+				<label class="coord-field">半径 <input type="number" name="radius" value="10" min="0"></label>
+				<label>期間 <input type="text" name="time" value="1d" placeholder="例: 1d, 3h, 30m"></label>
+				<label>対象プレイヤー（カンマ区切り） <input type="text" name="users" placeholder="例: Steve,Alex"></label>
+				<label>除外プレイヤー（カンマ区切り） <input type="text" name="excludeUsers"></label>
+				<label>対象ブロック/エンティティ（カンマ区切り） <input type="text" name="blocks" placeholder="例: CHEST,DIAMOND_ORE"></label>
+				<label>除外ブロック/エンティティ（カンマ区切り） <input type="text" name="excludeBlocks"></label>
+			</div>
+
+			<fieldset class="actions-fieldset">
+				<legend>アクション種別（未選択で全種別）</legend>
+				<div class="action-checkboxes" data-role="action-checkboxes"></div>
+			</fieldset>
+
+			<div class="form-buttons">
+				<button type="submit" class="btn-primary">検索</button>
+			</div>
+		</form>
+
+		<div id="lookup-warnings" class="warnings"></div>
+
+		<div class="result-toolbar">
+			<span id="lookup-count" class="hint"></span>
+			<div class="pager">
+				<button id="lookup-prev" class="btn-small" disabled>前へ</button>
+				<button id="lookup-next" class="btn-small" disabled>次へ</button>
+			</div>
+		</div>
+
+		<div class="table-wrap">
+			<table id="lookup-table">
+				<thead>
+					<tr>
+						<th>時刻</th>
+						<th>プレイヤー</th>
+						<th>アクション</th>
+						<th>対象 / 詳細</th>
+						<th>座標</th>
+						<th>戻し済み</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</section>
+
+	<!-- ================= ロールバック・リストアタブ ================= -->
+	<section id="tab-operation" class="tab-panel">
+		<p class="notice">同じ条件でまず「プレビュー」を実行し、対象件数を確認してから実行してください。</p>
+
+		<form id="operation-form" class="filter-form">
+			<label class="global-toggle">
+				<input type="checkbox" name="global" class="global-checkbox">
+				グローバル検索（ワールド/座標/半径を無視して全ワールドを対象にする。範囲を絞らない分、対象件数に注意）
+			</label>
+
+			<div class="filter-grid">
+				<label class="coord-field">ワールド
+					<select name="world" class="world-select"></select>
+				</label>
+				<label class="coord-field">X <input type="number" name="x" step="any"></label>
+				<label class="coord-field">Y <input type="number" name="y" step="any"></label>
+				<label class="coord-field">Z <input type="number" name="z" step="any"></label>
+				<label class="coord-field">半径 <input type="number" name="radius" value="10" min="0"></label>
+				<label>期間 <input type="text" name="time" value="1d" placeholder="例: 1d, 3h, 30m"></label>
+				<label>対象プレイヤー（カンマ区切り） <input type="text" name="users" placeholder="例: Steve,Alex"></label>
+				<label>除外プレイヤー（カンマ区切り） <input type="text" name="excludeUsers"></label>
+				<label>対象ブロック/エンティティ（カンマ区切り） <input type="text" name="blocks" placeholder="例: CHEST,DIAMOND_ORE"></label>
+				<label>除外ブロック/エンティティ（カンマ区切り） <input type="text" name="excludeBlocks"></label>
+			</div>
+
+			<fieldset class="actions-fieldset">
+				<legend>アクション種別（未選択で全種別）</legend>
+				<div class="action-checkboxes" data-role="action-checkboxes"></div>
+			</fieldset>
+
+			<div class="form-buttons">
+				<button type="submit" class="btn-secondary">プレビュー</button>
+			</div>
+		</form>
+
+		<div id="operation-warnings" class="warnings"></div>
+		<div id="operation-preview-summary" class="hint"></div>
+
+		<div class="table-wrap">
+			<table id="operation-table">
+				<thead>
+					<tr>
+						<th>時刻</th>
+						<th>プレイヤー</th>
+						<th>アクション</th>
+						<th>対象 / 詳細</th>
+						<th>座標</th>
+						<th>戻し済み</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+
+		<div class="confirm-box">
+			<label><input type="checkbox" id="operation-confirm"> 上記のプレビュー内容を確認しました。この条件で実行します。</label>
+			<div class="form-buttons">
+				<button id="operation-rollback" class="btn-danger" disabled>ロールバック実行</button>
+				<button id="operation-restore" class="btn-danger" disabled>リストア実行</button>
+			</div>
+		</div>
+
+		<div id="operation-jobs" class="job-list"></div>
+	</section>
+
+	<!-- ================= 持ち出し集計タブ ================= -->
+	<section id="tab-netdiff" class="tab-panel">
+		<p class="notice">
+			指定した範囲・期間のコンテナの出し入れを、プレイヤー×アイテムごとに「収納合計 - 取り出し合計」で集計します。
+			マイナス（赤字）は取り出した分を戻していない＝持ち出したままの数量です。
+			別のコンテナへ移し替えた場合、検索範囲内であれば持ち出しとしてカウントされません。
+		</p>
+
+		<form id="netdiff-form" class="filter-form">
+			<label class="global-toggle">
+				<input type="checkbox" name="global" class="global-checkbox">
+				グローバル検索（ワールド/座標/半径を無視して全ワールドを集計）
+			</label>
+
+			<div class="filter-grid">
+				<label class="coord-field">ワールド
+					<select name="world" class="world-select"></select>
+				</label>
+				<label class="coord-field">X <input type="number" name="x" step="any"></label>
+				<label class="coord-field">Y <input type="number" name="y" step="any"></label>
+				<label class="coord-field">Z <input type="number" name="z" step="any"></label>
+				<label class="coord-field">半径 <input type="number" name="radius" value="10" min="0"></label>
+				<label>期間 <input type="text" name="time" value="1d" placeholder="例: 1d, 3h, 30m"></label>
+				<label>対象プレイヤー（カンマ区切り） <input type="text" name="users" placeholder="例: Steve,Alex"></label>
+				<label>除外プレイヤー（カンマ区切り） <input type="text" name="excludeUsers"></label>
+				<label>対象ブロック（カンマ区切り） <input type="text" name="blocks" placeholder="例: CHEST,BARREL"></label>
+				<label>除外ブロック（カンマ区切り） <input type="text" name="excludeBlocks"></label>
+			</div>
+
+			<label class="global-toggle">
+				<input type="checkbox" id="netdiff-only-negative" checked>
+				持ち出し超過のみ表示（チェックを外すと全件表示）
+			</label>
+
+			<div class="form-buttons">
+				<button type="submit" class="btn-primary">集計</button>
+			</div>
+		</form>
+
+		<div id="netdiff-warnings" class="warnings"></div>
+		<div id="netdiff-summary" class="hint"></div>
+
+		<div class="table-wrap">
+			<table id="netdiff-table">
+				<thead>
+					<tr>
+						<th>プレイヤー</th>
+						<th>アイテム</th>
+						<th>収納</th>
+						<th>取り出し</th>
+						<th>純増減</th>
+						<th>回数</th>
+						<th>最初</th>
+						<th>最後</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</section>
+
+	<!-- ================= メンテナンスタブ ================= -->
+	<section id="tab-maintenance" class="tab-panel">
+		<h2>パージ（古いデータの削除）</h2>
+		<p class="notice">指定した期間より古い CoreProtect のログを完全に削除します。元に戻せません。</p>
+
+		<div class="filter-grid narrow">
+			<label>削除対象の期間（この期間より古いログを削除） <input type="text" id="purge-time" value="90d" placeholder="例: 90d, 6mo"></label>
+		</div>
+
+		<div class="confirm-box">
+			<label><input type="checkbox" id="purge-confirm"> 内容を理解した上で、古いログを完全に削除します。</label>
+			<div class="form-buttons">
+				<button id="purge-execute" class="btn-danger" disabled>パージ実行</button>
+			</div>
+		</div>
+
+		<div id="maintenance-jobs" class="job-list"></div>
+	</section>
+
+	<!-- ================= ステータスタブ ================= -->
+	<section id="tab-status" class="tab-panel">
+		<div class="form-buttons">
+			<button id="status-refresh" class="btn-small">更新</button>
+		</div>
+		<div id="status-content" class="status-grid"></div>
+	</section>
+
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

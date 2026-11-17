@@ -27,6 +27,11 @@ commands:
     permission: coreprotect.coreprotect
     permission-message: §3CoreProtect §f- You do not have permission to do that.
     usage: /<command> <params>
+  cpweb:
+    description: CoreProtect WebUI and MCP management
+    permission: coreprotect.web
+    permission-message: §3CoreProtect §f- You do not have permission to do that.
+    usage: /<command> <params>
 permissions:
     coreprotect.*:
         description: Gives access to all CoreProtect actions and commands
@@ -57,6 +62,8 @@ permissions:
             coreprotect.consumer: true
             coreprotect.networking: true
             coreprotect.give: false
+            coreprotect.web: true
+            coreprotect.web.admin: true
     coreprotect.co:
         description: Has permission to access the CoreProtect /co command
         default: true
@@ -155,3 +162,9 @@ permissions:
     coreprotect.give:
         description: Has permission to use the give command
         default: false
+    coreprotect.web:
+        description: Has permission to use the web command and access WebUI
+        default: op
+    coreprotect.web.admin:
+        description: Has permission to manage WebUI administrators
+        default: op

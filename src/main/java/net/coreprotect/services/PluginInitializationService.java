@@ -172,6 +172,7 @@ public class PluginInitializationService {
         Consumer.startConsumer();
         EntitySpawnTracking.initializeLoadedEntities();
         Extensions.startBackgroundService();
+        net.coreprotect.web.WebManager.initialize(plugin);
     }
 
     /**
