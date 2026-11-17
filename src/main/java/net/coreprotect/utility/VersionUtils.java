@@ -131,8 +131,8 @@ public class VersionUtils {
             branch = YamlConfiguration.loadConfiguration(reader).getString("branch");
             reader.close();
 
-            if (branch == null || branch.equals("${project.branch}")) {
-                branch = "";
+            if (branch == null || branch.equals("${project.branch}") || branch.trim().isEmpty()) {
+                branch = "master";
             }
             if (branch.startsWith("-")) {
                 branch = branch.substring(1);
